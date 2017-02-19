@@ -29,6 +29,7 @@ public class DaoTarefa extends AbstractDao implements IDao<Tarefa> {
         valores = new ContentValues();
         valores.put("descricao",obj.getDescricao());
         valores.put("feito",obj.isFeito() ? 1 : 0);
+        valores.put("idLista",obj.getIdLista());
 
         Long id = db.insert(tableName,null,valores);
         db.close();
@@ -48,6 +49,7 @@ public class DaoTarefa extends AbstractDao implements IDao<Tarefa> {
         valores = new ContentValues();
         valores.put("descricao",obj.getDescricao());
         valores.put("feito",obj.isFeito() ? 1 : 0);
+        valores.put("idLista",obj.getIdLista());
 
         db.update(tableName,valores,where,null);
         db.close();
@@ -62,23 +64,36 @@ public class DaoTarefa extends AbstractDao implements IDao<Tarefa> {
             where = " id = " + obj;
         else if (obj instanceof Lista)
             where = " idLista = " +  ((Lista) obj).getId();
-        
+
         Cursor cursor;
         db = getReadableDatabase();
         
-        cursor = db.query(tableName,new String[]{"id","descricao","feito"},where,null,null,null,null);
-        db.close();
+        cursor = db.query(tableName,new String[]{"id","descricao","feito","idLista"},where,null,null,null,null);
+
         Tarefa t;
-        while (cursor != null)
-        {
-            t = new Tarefa();
-            t.setId(cursor.getInt(0));
-            t.setDescricao(cursor.getString(1));
-            t.setFeito(cursor.getInt(2) == 1 ? true : false);
-            tarefas.add(t);
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                t = new Tarefa();
+                t.setId(cursor.getInt(0));
+                t.setDescricao(cursor.getString(1));
+                t.setFeito(cursor.getInt(2) == 1);
+                t.setIdLista(cursor.getInt(3));
+                tarefas.add(t);
+                cursor.moveToNext();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        
+
+        db.close();
         return tarefas;
+    }
+
+
+    @Override
+    public void deletar(Tarefa obj) {
+        excluir(obj.getId());
     }
 
     @Override

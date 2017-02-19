@@ -13,6 +13,7 @@ public class Lista {
     private String nome;
     private List<Tarefa> tarefas;
 
+
     public Lista() {
         this("");
     }
@@ -46,8 +47,35 @@ public class Lista {
         this.tarefas = tarefas;
     }
 
+
+    public   List<Tarefa> getTarefasConcluidas()
+    {
+        List<Tarefa> concluidas = new ArrayList<Tarefa>();
+
+        for (Tarefa t: tarefas) {
+            if (t.isFeito())
+                concluidas.add(t);
+        }
+
+        return concluidas;
+    }
+    private  List<Tarefa> getTarefasNaoConcluidas(){
+        List<Tarefa> naoConcluidas = new ArrayList<Tarefa>();
+
+        for (Tarefa t: tarefas) {
+            if (!t.isFeito())
+                naoConcluidas.add(t);
+        }
+
+        return naoConcluidas;
+    }
+
+
     @Override
     public String toString() {
-        return getNome() + " " + tarefas.size() ;
+
+        return getNome()
+                + " - por Fazer: " + getTarefasNaoConcluidas().size()
+                + " - Concluidas: " + getTarefasConcluidas().size();
     }
 }

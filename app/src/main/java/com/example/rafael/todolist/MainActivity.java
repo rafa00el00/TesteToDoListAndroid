@@ -23,7 +23,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.rafael.todolist.DAO.DaoLista;
 import com.example.rafael.todolist.Models.Lista;
+import com.facebook.stetho.Stetho;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -35,13 +37,19 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Lista> lista;
     private Lista listaSelecionada;
     private ArrayAdapter<Lista> adapter;
+    DaoLista daoLista;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Stetho.initializeWithDefaults(this);
         setContentView(R.layout.activity_main);
         lst1 = (ListView) findViewById(R.id.lst1);
-        lista = new ArrayList<Lista>();
+        daoLista = new DaoLista(this);
+        Log.i("Sair","Iniciou");
+        lista = (ArrayList<Lista>) daoLista.consultarLista(null);
+        //lista = new ArrayList<Lista>();
+
         adapter = new ArrayAdapter<Lista>(this,android.R.layout.simple_list_item_1,lista);
         lst1.setAdapter(adapter);
         lst1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -54,7 +62,34 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent,1);
             }
         });
+        lst1.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                new AlertDialog.Builder(view.getContext())
+                        .setTitle("Deletar")
+                        .setMessage("Deseja deletar " + lista.get(position) + " ?")
+                        .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                daoLista.deletar(lista.get(position));
+                                lista.remove(position);
+                                adapter.notifyDataSetChanged();
+                            }
+                        })
+                        .setNegativeButton("Não",null)
+                        .show();
 
+                return true;
+            }
+        });
+
+    }
+
+    @Override
+    protected void onStop() {
+        Log.i("Sair","On Stop Teste");
+        salvarLista();
+        super.onStop();
     }
 
     @Override
@@ -79,9 +114,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
-
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId())
+        {
+            case R.id.salvarLista:
+                String resp;
+                resp = salvarLista();
+                Toast.makeText(this,resp,Toast.LENGTH_LONG).show();
+                break;
+        }
         return true;
+    }
+
+    private String salvarLista()
+    {
+        String resp = "Nenhuma lista para Adicionar";
+        for (Lista l : lista)
+        {
+            Log.i("Sair",l.getId() + " - Lista");
+            if(l.getId() == 0) {
+                resp = daoLista.insert(l);
+            }else{
+                resp = daoLista.update(l);
+            }
+        }
+        return resp;
     }
 
     public void btnAddClick(View v)

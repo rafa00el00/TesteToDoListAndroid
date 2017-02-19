@@ -9,6 +9,8 @@ public class Tarefa {
     private String descricao;
     private boolean feito;
 
+    private int idLista;
+
     public Tarefa() {
         this(0,"não informado",false);
     }
@@ -35,14 +37,15 @@ public class Tarefa {
         this.feito = feito;
     }
 
-    public int getId() {
-
-        return id;
-    }
+    public int getId() {   return id;    }
 
     public void setId(int id) {
         this.id = id;
     }
+
+    public int getIdLista() {   return idLista;    }
+
+    public void setIdLista(int idLista) {   this.idLista = idLista;    }
 
     @Override
     public String toString() {

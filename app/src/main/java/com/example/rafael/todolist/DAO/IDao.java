@@ -12,6 +12,6 @@ public interface IDao<T> {
     public  String update(T obj);
     public List<T> consultarLista(Object obj);
     public T consultar(Object obj);
-
+    public void deletar(T obj);
 
 }

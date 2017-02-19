@@ -8,12 +8,14 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.menu.MenuBuilder;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.example.rafael.todolist.DAO.DaoTarefa;
 import com.example.rafael.todolist.Models.Lista;
 import com.example.rafael.todolist.Models.Tarefa;
 import com.google.gson.Gson;
@@ -29,12 +31,14 @@ public class tarefasActivity extends AppCompatActivity
     private ListView lstTarefas;
     private Lista lista;
     private ArrayAdapter<Tarefa> adapter;
+    private DaoTarefa daoTarefa;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tarefas);
         Intent intent = getIntent();
+        daoTarefa = new DaoTarefa(this);
         lista = (Lista) new Gson().fromJson(intent.getStringExtra("lista"),Lista.class);
         if(lista.getTarefas() == null)
             lista.setTarefas(new ArrayList<Tarefa>());
@@ -65,6 +69,27 @@ public class tarefasActivity extends AppCompatActivity
 
             }
         });
+        lstTarefas.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(final AdapterView<?> parent, View view, final int position, long id) {
+                new AlertDialog.Builder(view.getContext())
+                        .setTitle("Deletar")
+                        .setMessage("Deseja deletar " + lista.getTarefas().get(position) + " ?")
+                        .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                daoTarefa.deletar(lista.getTarefas().get(position));
+                                lista.getTarefas().remove(position);
+                                adapter.notifyDataSetChanged();
+                            }
+                        })
+                        .setNegativeButton("Não",null)
+                        .show();
+
+                return true;
+            }
+        });
+        //getActionBar().setDisplayShowHomeEnabled(true);
     }
 
     @Override
@@ -86,5 +111,17 @@ public class tarefasActivity extends AppCompatActivity
         lista.getTarefas().add(t);
         adapter.notifyDataSetChanged();
         ((EditText) findViewById(R.id.txtxAddTarefa)).setText("");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId())
+        {
+            case android.R.id.home:
+                finish();
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

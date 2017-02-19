@@ -29,4 +29,6 @@ dependencies {
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
     compile group: 'com.google.code.gson', name: 'gson', version: '1.7.2'
 
+    //Para acessar o banco de dados
+    compile 'com.facebook.stetho:stetho:1.4.1'
 }

@@ -25,13 +25,14 @@ public abstract class AbstractDao extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         String sql = "Create table Lista(" +
                 " id integer primary key autoincrement " +
-                " nome Text " +
+                " ,nome Text " +
                 ");";
         db.execSQL(sql);
         sql = "Create table Tarefa(" +
                 " id integer primary key autoincrement " +
-                " descricao Text " +
-                " feito integer " +
+                " ,descricao Text " +
+                " ,feito integer " +
+                " ,idLista integer " +
                 ");";
         db.execSQL(sql);
 
