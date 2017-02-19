@@ -43,4 +43,9 @@ public class Tarefa {
     public void setId(int id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return getDescricao() + " - " + (isFeito()? "Concluido":"Por Fazer");
+    }
 }

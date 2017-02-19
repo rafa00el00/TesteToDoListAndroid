@@ -45,4 +45,9 @@ public class Lista {
     public void setTarefas(List<Tarefa> tarefas) {
         this.tarefas = tarefas;
     }
+
+    @Override
+    public String toString() {
+        return getNome() + " " + tarefas.size() ;
+    }
 }
